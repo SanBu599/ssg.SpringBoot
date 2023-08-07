@@ -23,9 +23,9 @@
 	where seq=#{seq}
 </select>
 
-<update id="pdsUpdate" parameterType="ssg.com.a.dto.PdsDto">
+<update id="updatePds" parameterType="ssg.com.a.dto.PdsDto">
 	update pds
-	set title=#{title}, content=#{content}, regdate=now()
+	set title=#{title}, content=#{content}, filename=#{filename}, newfilename=#{newfilename}
 	where seq=#{seq}
 </update>
 

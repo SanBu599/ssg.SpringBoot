@@ -28,7 +28,7 @@ public class PdsService {
 		return dao.getPds(seq);
 	}
 	
-	public int pdsUpdate(PdsDto pds) {
-		return dao.pdsUpdate(pds);
+	public int updatePds(PdsDto pds) {
+		return dao.updatePds(pds);
 	}
 }

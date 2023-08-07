@@ -123,16 +123,47 @@ public class PdsController {
 	
 
 	
-	@PostMapping("pdsUpdate")
-	public String pdsUpdate(PdsDto pds) {
-		System.out.println("PdsController pdsUpdate(PdsDto pds)" + new Date());
+	@PostMapping("updatePds")
+	public String updatePds(@RequestParam("uploadFile")MultipartFile uploadFile,
+							PdsDto pds, 
+							HttpServletRequest request) {
+		boolean isS = true;
 		
-		int count = service.pdsUpdate(pds);
+		System.out.println("HelloController updatePds " + new Date());
 		
-		if(count==0) {
+		String path = request.getServletContext().getRealPath("/upload");
+		
+		String filename = uploadFile.getOriginalFilename();
+		if(filename != null && !filename.equals("")) {
+			
+			String newfilename = PdsUtil.getNewfileName(filename);			
+			String filepath = path + "/" + newfilename;			
+			System.out.println(filepath);	
+			
+			// 기존의 파일을 삭제
+			File df = new File(path + "/" + pds.getNewfilename());
+			df.delete();			
+					
+			File f = new File(filepath);			
+			try {
+				BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(f));
+				
+				os.write(uploadFile.getBytes());	// 실제 업로드되는 부분
+				os.close();					
+			} catch (Exception e) {
+				isS = false;
+			} 
+			
+			pds.setNewfilename(newfilename);
+			pds.setFilename(filename);
+		}
+		
+		// DB에 업데이트
+		int count = service.updatePds(pds);		
+		if(isS == false || count == 0) {
 			return "NO";
 		}
-		return "YES";
 		
+		return "YES";
 	}
 }

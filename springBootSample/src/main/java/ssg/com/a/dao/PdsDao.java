@@ -17,5 +17,5 @@ public interface PdsDao {
 	
 	PdsDto getPds(int seq);
 	
-	int pdsUpdate(PdsDto pds);
+	int updatePds(PdsDto pds);
 }
