@@ -1,0 +1,5 @@
+
+# 0 ~ 1024이외의 번호를 사용권장
+server.port=3000
+
+spring.datasource.hikari.driver-class-name=com.mysql.cj.jdbc.Driver

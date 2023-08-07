@@ -1,0 +1,97 @@
+package ssg.com.a.controller;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.servlet.http.HttpServletRequest;
+import ssg.com.a.dto.PdsDto;
+import ssg.com.a.dto.PdsUtil;
+import ssg.com.a.service.PdsService;
+
+@RestController
+public class PdsController {
+
+
+	@Autowired
+	PdsService service;
+	
+	@GetMapping("pdslist")
+	public List<PdsDto> pdslist(){
+		System.out.println("PdsController pdslist()" + new Date());
+		
+		return service.pdslist();
+	}
+	
+	@PostMapping("uploadPds")
+	public String uploadPds(PdsDto pds, 
+							@RequestParam(value = "fileupload", required = false)
+							MultipartFile fileupload,
+							HttpServletRequest request) {
+		System.out.println("PdsController uploadPds()" + new Date());
+		
+		String filename = fileupload.getOriginalFilename();
+		System.out.println("filename:" + filename);
+		
+		pds.setFilename(filename);	
+		
+		String fupload = request.getServletContext().getRealPath("/upload");
+		System.out.println("파일업로드경로:" + fupload);
+		
+		String newfilename = PdsUtil.getNewfileName(filename);		
+		System.out.println("newfilename:" + newfilename);	
+		
+		pds.setNewfilename(newfilename);
+		
+		File file = new File(fupload + "/" + newfilename);
+		
+		
+		try {
+			// 실제 파일에 업로드
+			FileUtils.writeByteArrayToFile(file, fileupload.getBytes());
+			
+			// DB에 저장
+		int count = service.uploadPds(pds);
+			if(count==0) {
+				return "NO";
+			}
+		} catch (IOException e) {			 
+			e.printStackTrace();
+		}
+		return "YES"; 
+	}
+	
+	@GetMapping("getPds")
+	public String getPds(int seq) {
+		System.out.println("PdsController getPds()" + new Date());
+		
+		int count = service.getPds(seq);
+		if(count==0) {
+			retunr "NO";
+		}
+		return "YES";
+	}
+	
+	@PostMapping("filedownload")
+	public String filedownload(int seq, String filename, String newfilename, 
+			 HttpServletRequest request) {
+		// 경로
+		String fupload = request.getServletContext().getRealPath("/upload");
+
+		//String fupload = "d:\\tmp";
+
+		// 다운로드를 받을 파일
+		File downloadFile = new File(fupload + "/" + newfilename);
+		
+		return "downloadFile";
+	}
+}

@@ -1,0 +1,13 @@
+package ssg.com.a.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
+
+import ssg.com.a.service.BbsService;
+
+@RestController
+public class BbsController {
+
+	@Autowired
+	BbsService service;
+}
